@@ -9,7 +9,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [scanResult, setScanResult] = useState(null);
 
-  if (localStorage.getItem("access_token")) {
+  if (localStorage.getItem("access_token") !== undefined) {
     setIsLoggedIn(true);
   }
 
