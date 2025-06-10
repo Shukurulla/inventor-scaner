@@ -6,12 +6,9 @@ import ScannerPage from "./components/ScannerPage";
 import ResultPage from "./components/ResultPage";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const token = localStorage.getItem("access_token");
+  const [isLoggedIn, setIsLoggedIn] = useState(token ? true : false);
   const [scanResult, setScanResult] = useState(null);
-
-  if (localStorage.getItem("access_token") !== undefined) {
-    setIsLoggedIn(true);
-  }
 
   return (
     <Router>
