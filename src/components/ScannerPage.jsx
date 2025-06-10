@@ -18,7 +18,7 @@ function ScannerPage({ setScanResult }) {
           const inn = decodedText;
           const accessToken = localStorage.getItem("access_token");
           const response = await fetch(
-            "https://invenmaster.pythonanywhere.com/api/equipment/search-by-inn-prefix/?nn_prefix=1234567",
+            "https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=1234567",
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -63,7 +63,19 @@ function ScannerPage({ setScanResult }) {
             className="w-full aspect-square border-4 border-blue-500 rounded-lg"
           ></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            {/*   */}
+            {/* <svg
+              className="w-16 h-16 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 20l-5.5-5.5a4.5 4.5 0 110-6.364L9 4m6 16l5.5-5.5a4.5 4.5 0 10-6.364 0L15 20m-6 0v-7a2 2 0 012-2h4a2 2 0 012 2v7"
+              />
+            </svg> */}
           </div>
         </div>
       </div>
