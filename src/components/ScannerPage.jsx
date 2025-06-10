@@ -10,13 +10,15 @@ function ScannerPage({ setScanResult }) {
     const html5QrCode = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-    // DOM elementining mavjudligini tekshirish
+    // DOM elementini tekshirish
     const readerElement = document.getElementById("reader");
     if (!readerElement) {
       console.error("Элемент reader не найден в DOM");
+      alert("Ошибка: Элемент сканера не найден. Перезагрузите страницу.");
       return;
     }
 
+    // Kamera ruxsatini tekshirish va skanerni ishga tushirish
     html5QrCode
       .start(
         { facingMode: "environment" },
@@ -43,7 +45,7 @@ function ScannerPage({ setScanResult }) {
             const data = await response.json();
             if (response.ok) {
               setScanResult(data);
-              html5QrCode.stop();
+              await html5QrCode.stop();
               navigate("/result");
             } else {
               alert(
@@ -60,18 +62,35 @@ function ScannerPage({ setScanResult }) {
         },
         (error) => {
           console.warn("Ошибка сканирования QR:", error);
-          alert("Ошибка сканирования: " + error);
+          if (error === "Permission denied") {
+            alert(
+              "Разрешение камеры не предоставлено. Проверьте настройки браузера."
+            );
+          } else {
+            alert("Ошибка сканирования: " + error);
+          }
         }
       )
       .catch((err) => {
         console.error("Ошибка запуска сканера:", err);
-        alert("Не удалось запустить сканер. Проверьте разрешение камеры.");
+        if (err.name === "InvalidStateError") {
+          alert(
+            "Ошибка: Неверное состояние элемента. Убедитесь, что камера доступна и страница загружена корректно."
+          );
+        } else {
+          alert(
+            "Не удалось запустить сканер. Проверьте разрешение камеры или перезагрузите страницу."
+          );
+        }
       });
 
+    // Tozalash funksiyasi
     return () => {
-      html5QrCode
-        .stop()
-        .catch((err) => console.error("Ошибка остановки сканера:", err));
+      if (html5QrCode.isScanning) {
+        html5QrCode
+          .stop()
+          .catch((err) => console.error("Ошибка остановки сканера:", err));
+      }
     };
   }, [setScanResult, navigate]);
 
