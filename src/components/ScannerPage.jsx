@@ -37,7 +37,10 @@ function ScannerPage({ setScanResult }) {
           }
         } catch (error) {
           console.error("API ошибка:", error);
-          alert("Ошибка сети или сервера.");
+          alert(
+            "Ошибка сети или сервера." +
+              `https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=${decodedText}`
+          );
         }
       },
       (error) => {
