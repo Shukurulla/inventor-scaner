@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
+import axios from "axios";
 
 function ScannerPage({ setScanResult }) {
   const scannerRef = useRef(null);
