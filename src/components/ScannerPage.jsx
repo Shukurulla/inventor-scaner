@@ -36,7 +36,7 @@ function ScannerPage({ setScanResult }) {
           }
         } catch (error) {
           console.error("API ошибка:", error);
-          alert("Ошибка сети или сервера.");
+          alert("Ошибка сети или сервера. " + error.response);
         }
       },
       (error) => {
