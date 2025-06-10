@@ -17,7 +17,7 @@ function ScannerPage({ setScanResult }) {
         try {
           const inn = decodedText;
           const accessToken = localStorage.getItem("access_token");
-          const response = await fetch(
+          const { data } = await axios.get(
             "https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=" +
               inn,
             {
@@ -27,8 +27,7 @@ function ScannerPage({ setScanResult }) {
               },
             }
           );
-          const data = await response.json();
-          if (response.ok) {
+          if (data) {
             setScanResult(data);
             html5QrCode.stop();
             navigate("/result");
