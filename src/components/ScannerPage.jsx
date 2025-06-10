@@ -18,7 +18,7 @@ function ScannerPage({ setScanResult }) {
           const inn = decodedText;
           const accessToken = localStorage.getItem("access_token");
           const response = await fetch(
-            "https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=1234567",
+            `https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=${inn}`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
