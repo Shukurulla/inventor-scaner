@@ -9,6 +9,10 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [scanResult, setScanResult] = useState(null);
 
+  if (localStorage.getItem("access_token")) {
+    setIsLoggedIn(true);
+  }
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">

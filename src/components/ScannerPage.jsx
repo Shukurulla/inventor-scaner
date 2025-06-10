@@ -10,87 +10,45 @@ function ScannerPage({ setScanResult }) {
     const html5QrCode = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-    // DOM elementini tekshirish
-    const readerElement = document.getElementById("reader");
-    if (!readerElement) {
-      console.error("Элемент reader не найден в DOM");
-      alert("Ошибка: Элемент сканера не найден. Перезагрузите страницу.");
-      return;
-    }
-
-    // Kamera ruxsatini tekshirish va skanerni ishga tushirish
-    html5QrCode
-      .start(
-        { facingMode: "environment" },
-        config,
-        async (decodedText) => {
-          try {
-            const inn = decodedText;
-            const accessToken = localStorage.getItem("access_token");
-            if (!accessToken) {
-              alert("Токен доступа не найден. Пожалуйста, войдите снова.");
-              navigate("/");
-              return;
+    html5QrCode.start(
+      { facingMode: "environment" },
+      config,
+      async (decodedText) => {
+        try {
+          const inn = decodedText;
+          const accessToken = localStorage.getItem("access_token");
+          const response = await fetch(
+            "https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=" +
+              inn,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
             }
-
-            const response = await fetch(
-              `https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=${inn}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            const data = await response.json();
-            if (response.ok) {
-              setScanResult(data);
-              await html5QrCode.stop();
-              navigate("/result");
-            } else {
-              alert(
-                `Ошибка сканирования: ${data.detail || "Проверьте QR-код."}`
-              );
-            }
-          } catch (error) {
-            console.error("API ошибка:", error);
-            alert(
-              "Ошибка сети или сервера: " +
-                (error.message || "Неизвестная ошибка")
-            );
-          }
-        },
-        (error) => {
-          console.warn("Ошибка сканирования QR:", error);
-          if (error === "Permission denied") {
-            alert(
-              "Разрешение камеры не предоставлено. Проверьте настройки браузера."
-            );
+          );
+          const data = await response.json();
+          if (response.ok) {
+            setScanResult(data);
+            html5QrCode.stop();
+            navigate("/result");
           } else {
-            alert("Ошибка сканирования: " + error);
+            alert("Ошибка сканирования. Проверьте QR-код.");
           }
+        } catch (error) {
+          console.error("API ошибка:", error);
+          alert("Ошибка сети или сервера.");
         }
-      )
-      .catch((err) => {
-        console.error("Ошибка запуска сканера:", err);
-        if (err.name === "InvalidStateError") {
-          alert(
-            "Ошибка: Неверное состояние элемента. Убедитесь, что камера доступна и страница загружена корректно."
-          );
-        } else {
-          alert(
-            "Не удалось запустить сканер. Проверьте разрешение камеры или перезагрузите страницу."
-          );
-        }
-      });
-
-    // Tozalash funksiyasi
-    return () => {
-      if (html5QrCode.isScanning) {
-        html5QrCode
-          .stop()
-          .catch((err) => console.error("Ошибка остановки сканера:", err));
+      },
+      (error) => {
+        console.warn("Ошибка сканирования QR:", error);
       }
+    );
+
+    return () => {
+      html5QrCode
+        .stop()
+        .catch((err) => console.error("Ошибка остановки сканера:", err));
     };
   }, [setScanResult, navigate]);
 
@@ -106,7 +64,19 @@ function ScannerPage({ setScanResult }) {
             className="w-full aspect-square border-4 border-blue-500 rounded-lg"
           ></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            {/* SVG ko'rsatkichni o'chirib qo'yildi, agar kerak bo'lsa qayta qo'shish mumkin */}
+            <svg
+              className="w-16 h-16 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 20l-5.5-5.5a4.5 4.5 0 110-6.364L9 4m6 16l5.5-5.5a4.5 4.5 0 10-6.364 0L15 20m-6 0v-7a2 2 0 012-2h4a2 2 0 012 2v7"
+              />
+            </svg>
           </div>
         </div>
       </div>
