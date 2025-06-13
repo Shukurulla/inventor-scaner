@@ -1,33 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authAPI } from "../services/apiService";
 
 function LoginPage({ setIsLoggedIn }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
     try {
-      const response = await fetch(
-        "https://invenmaster.pythonanywhere.com/user/login/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-        }
-      );
-      const data = await response.json();
+      const response = await authAPI.login({ username, password });
+      const data = response.data;
+
       if (data.access && data.refresh) {
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
         setIsLoggedIn(true);
         navigate("/");
       } else {
-        alert("Ошибка входа. Проверьте имя пользователя и пароль.");
+        setError("Ошибка входа. Неверный ответ сервера.");
       }
     } catch (error) {
-      alert("Ошибка сети или сервера.");
+      console.error("Login error:", error);
+
+      if (error.response?.status === 401) {
+        setError("Неверное имя пользователя или пароль.");
+      } else if (error.response?.status >= 500) {
+        setError("Ошибка сервера. Попробуйте позже.");
+      } else if (error.code === "NETWORK_ERROR" || !error.response) {
+        setError("Ошибка сети. Проверьте подключение к интернету.");
+      } else {
+        setError("Произошла ошибка при входе. Попробуйте снова.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,6 +49,13 @@ function LoginPage({ setIsLoggedIn }) {
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Вход
         </h2>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="username">
@@ -49,6 +68,8 @@ function LoginPage({ setIsLoggedIn }) {
               onChange={(e) => setUsername(e.target.value)}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Введите имя пользователя"
+              required
+              disabled={loading}
             />
           </div>
           <div className="mb-6">
@@ -62,13 +83,23 @@ function LoginPage({ setIsLoggedIn }) {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Введите пароль"
+              required
+              disabled={loading}
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+            className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            disabled={loading}
           >
-            Войти
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Вход...
+              </>
+            ) : (
+              "Войти"
+            )}
           </button>
         </form>
       </div>

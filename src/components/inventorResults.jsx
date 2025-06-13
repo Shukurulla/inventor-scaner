@@ -1,8 +1,13 @@
-import { FaComputer, FaTv, FaWifi } from "react-icons/fa6";
+import {
+  FaComputer,
+  FaTv,
+  FaWifi,
+  FaLaptop,
+  FaKeyboard,
+} from "react-icons/fa6";
 import { FiPrinter, FiMonitor } from "react-icons/fi";
-import { MdOutlineProjectionScreen, MdOutlineTabletMac } from "react-icons/md";
+import { MdOutlineScreenShare, MdTabletMac } from "react-icons/md";
 import { BiExtension } from "react-icons/bi";
-import { PiWhiteboardLight } from "react-icons/pi";
 
 // Status mapping function
 const statusGenerate = (status) => {
@@ -20,16 +25,15 @@ const getEquipmentIcon = (typeId, typeName) => {
   const iconProps = { size: 20, color: "#10B981" };
 
   if (typeName === "Компьютер") return <FaComputer {...iconProps} />;
-  if (typeName === "Проектор")
-    return <MdOutlineProjectionScreen {...iconProps} />;
+  if (typeName === "Проектор") return <MdOutlineScreenShare {...iconProps} />;
   if (typeName === "Принтер") return <FiPrinter {...iconProps} />;
   if (typeName === "Телевизор") return <FaTv {...iconProps} />;
-  if (typeName === "Ноутбук") return <MdOutlineTabletMac {...iconProps} />;
+  if (typeName === "Ноутбук") return <FaLaptop {...iconProps} />;
   if (typeName === "Моноблок") return <FaComputer {...iconProps} />;
   if (typeName === "Монитор") return <FiMonitor {...iconProps} />;
   if (typeName === "Роутер") return <FaWifi {...iconProps} />;
   if (typeName === "Удлинитель") return <BiExtension {...iconProps} />;
-  if (typeName === "Доска") return <PiWhiteboardLight {...iconProps} />;
+  if (typeName === "Доска") return <FaKeyboard {...iconProps} />;
 
   return <FaComputer {...iconProps} />; // Default icon
 };

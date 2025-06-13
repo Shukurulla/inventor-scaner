@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UniversalEquipmentInfo } from "./inventorResults";
+import { inventoryAPI } from "../services/apiService";
 
 function ResultPage() {
   const { inn } = useParams();
@@ -15,22 +15,7 @@ function ResultPage() {
       setLoading(true);
       setError(null);
 
-      const accessToken = localStorage.getItem("access_token");
-
-      if (!accessToken) {
-        setError("Токен авторизации не найден");
-        return;
-      }
-
-      const { data } = await axios.get(
-        `https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=${inn}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const { data } = await inventoryAPI.searchByInn(inn);
 
       if (data && data.results && data.results.length > 0) {
         console.log("Equipment data:", data.results[0]);
@@ -40,10 +25,15 @@ function ResultPage() {
       }
     } catch (error) {
       console.error("API error:", error);
+
       if (error.response?.status === 401) {
         setError("Сессия истекла. Пожалуйста, войдите снова");
-        // Optionally redirect to login
-        // navigate("/");
+      } else if (error.response?.status === 404) {
+        setError("Оборудование с данным ИНН не найдено");
+      } else if (error.response?.status >= 500) {
+        setError("Ошибка сервера. Попробуйте позже");
+      } else if (error.code === "NETWORK_ERROR" || !error.response) {
+        setError("Ошибка сети. Проверьте подключение к интернету");
       } else {
         setError("Ошибка при загрузке данных");
       }
