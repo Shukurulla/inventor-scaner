@@ -1,57 +1,42 @@
-function ResultPage({ scanResult }) {
-  const parsedBody = scanResult?.body ? JSON.parse(scanResult.body) : {};
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { PrinterInfo } from "./inventorResults";
+
+function ResultPage() {
+  const { inn } = useParams();
+  const [result, setResult] = useState({});
+  const scandData = async () => {
+    const accessToken = localStorage.getItem("access_token");
+    const { data } = await axios.get(
+      "https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=" +
+        inn,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (data) {
+      console.log(data.results[0]);
+
+      return setResult(data.results[0]);
+    }
+  };
+
+  useEffect(() => {
+    scandData();
+  }, [inn]);
+
+  // const renderEquipment = () => {
+  //   if()
+  // }
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
-          Результат сканирования
-        </h2>
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span className="font-semibold">Название:</span>
-            <span>{scanResult?.name || "N/A"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">ИНН:</span>
-            <span>{parsedBody?.inn || "N/A"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">Тип:</span>
-            <span>{scanResult?.type_data?.name || "N/A"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">Описание:</span>
-            <span>{parsedBody?.description || "N/A"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">Статус:</span>
-            <span>{parsedBody?.status || "N/A"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">Диск(и):</span>
-            <span>
-              {scanResult?.disks
-                ?.map((d) => `${d.disk_type} ${d.capacity_gb}GB`)
-                .join(", ") || "N/A"}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">Видеокарта:</span>
-            <span>{scanResult?.gpus?.[0]?.model || "N/A"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold">Договор:</span>
-            <a
-              href={scanResult?.contract?.file_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline"
-            >
-              Скачать PDF
-            </a>
-          </div>
-        </div>
+        <PrinterInfo equipment={result} />
       </div>
     </div>
   );

@@ -35,10 +35,10 @@ function App() {
             }
           />
           <Route
-            path="/result"
+            path="/result/:inn"
             element={
-              isLoggedIn && scanResult ? (
-                <ResultPage scanResult={scanResult} />
+              isLoggedIn ? (
+                <ResultPage />
               ) : (
                 <LoginPage setIsLoggedIn={setIsLoggedIn} />
               )

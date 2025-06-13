@@ -17,30 +17,9 @@ function ScannerPage({ setScanResult }) {
       async (decodedText) => {
         try {
           const inn = decodedText;
-          const accessToken = localStorage.getItem("access_token");
-          const { data } = await axios.get(
-            "https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=" +
-              inn,
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (data) {
-            setScanResult(data);
-            html5QrCode.stop();
-            navigate("/result");
-          } else {
-            alert("Ошибка сканирования. Проверьте QR-код.");
-          }
+          navigate(inn);
         } catch (error) {
           console.error("API ошибка:", error);
-          alert(
-            "Ошибка сети или сервера." +
-              `https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=${decodedText}`
-          );
         }
       },
       (error) => {
