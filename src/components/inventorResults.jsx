@@ -463,7 +463,7 @@ export const UniversalEquipmentInfo = ({ equipment }) => {
               <div className="text-md font-semibold mb-2">Местоположение</div>
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <div className="text-[#727272]">Комната:</div>
+                  <div className="text-[#727272]">Кабинет:</div>
                   <div className="text-sm">{equipment.room_data.name}</div>
                 </div>
                 <div className="flex items-center justify-between">
