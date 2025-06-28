@@ -17,7 +17,8 @@ function ScannerPage({ setScanResult }) {
       async (decodedText) => {
         try {
           const inn = decodedText;
-          navigate(`/result/${encodeURIComponent(inn)}`);
+          const safeInn = inn.replaceAll("/", "%2F");
+          navigate(`/result/${safeInn}`);
         } catch (error) {
           console.error("API ошибка:", error);
         }
