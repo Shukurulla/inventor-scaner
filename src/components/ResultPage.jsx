@@ -15,7 +15,9 @@ function ResultPage() {
       setLoading(true);
       setError(null);
 
-      const { data } = await inventoryAPI.searchByInn(inn);
+      console.log(encodeURIComponent(inn));
+
+      const { data } = await inventoryAPI.searchByInn(encodeURIComponent(inn));
 
       if (data && data.results && data.results.length > 0) {
         console.log("Equipment data:", data.results[0]);

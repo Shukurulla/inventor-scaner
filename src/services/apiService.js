@@ -103,7 +103,7 @@ export const authAPI = {
 export const inventoryAPI = {
   searchByInn: (inn) =>
     apiClient.get(
-      `/inventory/equipment/search-by-inn-prefix/?exact_inn=${inn}`
+      `https://invenmaster.pythonanywhere.com/inventory/equipment/search-by-inn-prefix/?exact_inn=${inn}`
     ),
   // Add other inventory endpoints as needed
 };
