@@ -17,7 +17,7 @@ function ScannerPage({ setScanResult }) {
       async (decodedText) => {
         try {
           const inn = decodedText;
-          navigate(`/result/${inn}`);
+          navigate(`/result/${encodeURIComponent(inn)}`);
         } catch (error) {
           console.error("API ошибка:", error);
         }
